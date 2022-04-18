@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="./css/stylesheet.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <title>Owl Taxis CRM</title>
+  </head>
+  <body>
+    <div class="container">
+      <div id="main-column" class="col-sm-12">
+        <div>
+          <h3 class="float-left mb-3">Owl Taxis CRM</h3>
+          <input
+            type="text"
+            class="form-control float-right mt-3"
+            style="width: 200px"
+            id="myInput"
+            placeholder="Search contacts..."
+          />
+        </div>
+
+        <table class="table-sm" id="myTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Company</th>
+              <th>Phone</th>
+            </tr>
+          </thead>
+          <tbody id="contacts-table-body"></tbody>
+        </table>
+        <!-- Load sample contacts array -->
+        <script src="./js/sampleContacts.js"></script>
+        <!-- load airtableApiKey and airtableBaseId from cookies.js -->
+        <script src="./js/cookies.js"></script>
+        <script src="./js/phoneFormat.js"></script>
+        <!-- Axios library -->
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+          $(document).ready(function () {
+            console.log("index.html > script > DOCUMENT.READY")
+            const table = "contacts"
+            console.log("table:", table)
+
+            // GET RECORDS
+            const getRecords = async () => {
+              console.log("GET RECORDS")
+              const options = {
+                url: `./index?table=${table}`,
+                method: "GET",
+              }
+              console.log("options:", options)
+
+              try {
+                const { data } = await axios(options)
+                const { records } = data
+                // console.log("records:", records)
+                contacts = records
+                console.log("contacts:", contacts)
+                // records.forEach(function (record) {
+                //   console.log("Retrieved", record.fields.name)
+                //   console.log("id:", record.id)
+                //   console.log(record.fields)
+                // })
+              } catch (err) {
+                console.log(
+                  "ERROR FETCHING CONTACTS FROM AIRTABLE, USING SAMPLE CONTACTS\n" +
+                    err
+                )
+                // alert(err)
+              }
+            }
+
+            getRecords()
+              .then(function () {
+                console.log("GET RECORDS THEN BUILD TABLE")
+                buildTable(contacts)
+              })
+              .catch(function (err) {
+                console.log(err)
+              })
+
+            $("#myInput").on("keyup", function () {
+              let value = $(this).val().toLowerCase()
+
+              $("#contacts-table-body tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+              })
+            })
+          })
+
+          function buildTable(contacts) {
+            $("#contacts").ready(function () {
+              let start = Date.now()
+              contacts.sort(function (a, b) {
+                var nameA = a.fields.first + a.fields.last || ""
+                nameA = nameA.toUpperCase()
+                var nameB = b.fields.first + b.fields.last || ""
+                nameB = nameB.toUpperCase()
+                if (nameA < nameB) {
+                  return -1
+                }
+                if (nameA > nameB) {
+                  return 1
+                }
+
+                return 0
+              })
+
+              let tableRows = ""
+
+              contacts.forEach((contact) => {
+                let fullName = contact.fields.name
+                let company = contact.fields.company
+                let email = contact.fields.email
+                let phone = removeSpaces(contact.fields.phone)
+
+                tableRows +=
+                  `<tr>` +
+                  `<td name="fullName"><a class="text-body" href="./view.html?table=contacts&field=phone&value=${phone}">${fullName}</a></td>` +
+                  `<td name="fullName"><a class="text-body" href="./view.html?table=contacts&field=phone&value=${phone}">${company}</a></td>` +
+                  `<td name="fullName"><a class="text-body" href="./view.html?table=contacts&field=phone&value=${phone}">${formatNumber(
+                    phone
+                  )}</a></td>` +
+                  `</tr>`
+              })
+              $("#contacts-table-body").html(tableRows)
+            })
+          }
+        </script>
+      </div>
+    </div>
+  </body>
+</html>
