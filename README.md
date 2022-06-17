@@ -1,5 +1,5 @@
 # twilio-functions-airtable-crm
- Twilio function and browser CRM that fetches recrods from Airtable API
+ Twilio function and browser CRM that fetches records from Airtable API
 
 ## CLI Commands
 
