@@ -80,10 +80,10 @@
                         <option value="oil-change">Oil Change</option></select
                       ><br />
                       <a
-                        id="confirm-order"
+                        id="create-appointment"
                         class="submit btn btn-primary mt-3"
                         href="#"
-                        >Confirm Appointment</a
+                        >Create Appointment</a
                       >
                     </div>
                   </form>
@@ -115,11 +115,7 @@
               <div class="border p-3 bg-light">
                 <h4>Appointment History</h4>
                 <div class="pt-3">
-                  <div id="appointment-history" class="">
-                    <p>Appointments go here</p>
-                    <p>Appointments go here</p>
-                    <p>Appointments go here</p>
-                  </div>
+                  <div id="appointment-history" class=""></div>
                 </div>
               </div>
             </div>
@@ -139,7 +135,7 @@
         </div>
       </div>
     </div>
-    <script src="./js/sampleContacts.js"></script>
+    <!-- <script src="./js/sampleContacts.js"></script> -->
     <script src="./js/phoneFormat.js"></script>
     <!-- Axios library -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -167,18 +163,15 @@
           console.log("Query param %s not found", paramName)
         }
 
-        const table = "contacts"
-        console.log("table:", table)
-
         // Load first sample contact from ../js/sample-contacts.js
-        contact = contacts[0]
+        // let contact = contacts[0]
 
         // GET RECORD BY ID
         const getRecordByField = async (field, value) => {
           console.log("GET RECORD BY ID")
           const options = {
             // url: `https://api.airtable.com/v0/${airtableBaseId}/${table}/${id}`,
-            url: `./view?table=${table}&field=${field}&value=${encodeURIComponent(
+            url: `./view?table=contacts&field=${field}&value=${encodeURIComponent(
               value
             )}`,
             method: "GET",
@@ -189,6 +182,7 @@
             const record = data
             contact = record
             console.log("CONTACT:", contact)
+            console.log("CONTACT.LENGTH:", contact.length)
           } catch (err) {
             console.log(
               "ERROR FETCHING CONTACT FROM AIRTABLE, USING SAMPLE CONTACT"
@@ -200,7 +194,12 @@
         getRecordByField(field, value)
           .then(function () {
             console.log("GET RECORD BY ID THEN BUILD VIEW")
-            buildView(contact)
+            if (contact.length != 0) {
+              buildView(contact)
+            } else {
+              console.log("DISPLAY MODAL")
+              // Display modal
+            }
           })
           .catch(function (err) {
             console.log(err)
@@ -221,9 +220,10 @@
         let fullName = contact.fields.name
         $("#contact-details").ready(function () {
           let contactDetails = ""
+          let contactImage = contact.fields.image ? contact.fields.image[0].url : "./images/contact.jpeg"
           contactDetails +=
             '<p><img width="150px" src="' +
-            contact.fields.image[0].url +
+            contactImage +
             '" alt="Picture"></p>' +
             "<b>" +
             fullName +
@@ -234,28 +234,37 @@
             contact.fields.email +
             "</p>" +
             "<p>" +
-            "Fake street name" +
+            "123 Main Street" +
             "<br>" +
-            "City" +
+            "Seattle" +
             ", " +
-            "State" +
+            "WA" +
             " " +
-            "Zip" +
+            "98104" +
             "</p>"
-          console.log("CONTACT DETAILS HTML:")
-          console.log(contactDetails)
           $("#contact-details").html(contactDetails)
-          const notesArray = contact.fields.notes.split("\n")
+
           let contactNotes = ""
-          notesArray.forEach((note) => {
-            contactNotes += `<p>${note}<p>`
-          })
-          console.log("CONTACT NOTES HTML:")
-          console.log(contactNotes)
-          $("#contact-notes").html(contactNotes)
+          if (contact.fields.notes != undefined) {
+            const notesArray = contact.fields.notes.split("\n")
+            notesArray.forEach((note) => {
+              contactNotes += `<p>${note}<p>`
+            })
+            $("#contact-notes").html(contactNotes)
+          }
+
+          let appointmentHistory = ""
+          if (contact.fields.appointments != undefined) {
+            const appointmentsArray = contact.fields.appointments.split("\n")
+            appointmentsArray.forEach((appointment) => {
+              appointmentHistory += `<p>${appointment}<p>`
+            })
+          }
+          $("#appointment-history").html(appointmentHistory)
         })
       }
 
+      // Set today's date on Date picker
       let rightNow = new Date()
       // console.log("RIGHTNOW: " + rightNow)
       let year = rightNow.getFullYear()
@@ -270,13 +279,13 @@
       console.log("myDate: " + myDate)
       $("#date").attr("value", myDate)
 
-      $("#confirm-order").click(function (event) {
+      $("#create-appointment").click(function (event) {
         event.preventDefault()
-        $("#confirm-order").attr("disabled", true)
+        $("#create-appointment").attr("disabled", true)
         $(".alert").hide()
-        console.log("#confirm-order clicked")
+        console.log("#create-appointment clicked")
         $("#success-alert").fadeIn("slow")
-        $("#confirm-order").attr("disabled", false)
+        $("#create-appointment").attr("disabled", false)
       })
 
       // CLOSE ALERT
