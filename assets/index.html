@@ -11,13 +11,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-    <title>Owl Taxis CRM</title>
+    <title>Les Schwab CRM</title>
   </head>
   <body>
     <div class="container">
       <div id="main-column" class="col-sm-12">
         <div>
-          <h3 class="float-left mb-3">Owl Taxis CRM</h3>
+          <h3 class="float-left pt-3 mb-3">Les Schwab CRM</h3>
           <input
             type="text"
             class="form-control float-right mt-3"
@@ -45,14 +45,12 @@
         <script>
           $(document).ready(function () {
             console.log("index.html > script > DOCUMENT.READY")
-            const table = "contacts"
-            console.log("table:", table)
 
             // GET RECORDS
             const getRecords = async () => {
               console.log("GET RECORDS")
               const options = {
-                url: `./index?table=${table}`,
+                url: "./index?table=contacts",
                 method: "GET",
               }
               console.log("options:", options)
@@ -77,6 +75,7 @@
               }
             }
 
+            // Fetch records and build table
             getRecords()
               .then(function () {
                 console.log("GET RECORDS THEN BUILD TABLE")
@@ -86,6 +85,7 @@
                 console.log(err)
               })
 
+            // Table filtering
             $("#myInput").on("keyup", function () {
               let value = $(this).val().toLowerCase()
 
