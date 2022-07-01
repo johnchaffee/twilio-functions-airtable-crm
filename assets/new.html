@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="./css/stylesheet.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <title>Twilio Flex CRM Details</title>
+  </head>
+  <body>
+    <div class="container">
+      <div id="main-column" class="col-sm-12">
+        <a href="/index.html">&larr; List</a>  
+        <div class="row">
+          <div class="col">
+            <div class="pt-3">
+              <div class="border p-3 bg-light">
+                <h4>New Contact</h4>
+                <form action="#">
+                  <div class="form-group">
+                    <p>
+                      <input
+                        type="text"
+                        id="first"
+                        name="first"
+                        placeholder="first"
+                      />
+                    </p>
+                    <p>
+                      <input
+                        type="text"
+                        id="last"
+                        name="last"
+                        placeholder="last"
+                      />
+                    </p>
+                    <p>
+                      <input
+                        type="text"
+                        id="company"
+                        name="company"
+                        placeholder="company"
+                      />
+                    </p>
+                    <p>
+                      <input
+                        type="text"
+                        id="phone"
+                        name="phone"
+                        placeholder="phone"
+                        readonly
+                      />
+                    </p>
+                    <p>
+                      <input
+                        type="text"
+                        id="email"
+                        name="email"
+                        placeholder="email"
+                      />
+                    </p>
+                    <textarea id="notes" name="notes" rows="4"></textarea>
+                    <br />
+                    <a
+                      id="create-contact-btn"
+                      class="submit btn btn-primary mt-2"
+                      href="#"
+                      >Create Contact</a
+                    >
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="./js/phoneFormat.js"></script>
+    <!-- Axios library -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        console.log("details.html > script > DOCUMENT.READY")
+        const params = window.location.search
+        console.log("PARAMS:", params)
+        const phoneNumber = getParam("phone")
+        console.log("phoneNumber:", phoneNumber)
+
+        function getParam(paramName) {
+          let query = window.location.search.substring(1)
+          let params = query.split("&")
+          for (let i = 0; i < params.length; i++) {
+            let pair = params[i].split("=")
+            if (decodeURIComponent(pair[0]) == paramName) {
+              return decodeURIComponent(pair[1])
+            }
+          }
+          console.log("Query param %s not found", paramName)
+        }
+        $("#phone").val(phoneNumber)
+      })
+
+      $("#create-contact-btn").click(function (event) {
+        event.preventDefault()
+
+        // CREATE CONTACT
+        const createContact = async () => {
+          console.log("GET RECORD BY ID")
+          const newRecord = {
+            fields: {
+              first: $("#first").val(),
+              last: $("#last").val(),
+              company: $("#company").val(),
+              phone: $("#phone").val(),
+              email: $("#email").val(),
+              notes: $("#notes").val(),
+            },
+          }
+          const options = {
+            url: `./new?table=contacts`,
+            method: "POST",
+            data: newRecord,
+          }
+          console.log("options:", options)
+          try {
+            const { data } = await axios(options)
+            const record = data
+            contact = record
+            console.log("CONTACT:", contact)
+          } catch (err) {
+            console.log("ERROR CREATING CONTACT IN AIRTABLE")
+            console.error(err)
+          }
+        }
+
+        createContact()
+          .then(function () {
+            console.log("CREATE CONTACT THEN REDIRECT TO VIEW")
+            window.location = `./view.html?table=contacts&field=phone&value=${$("#phone").val()}`
+          })
+          .catch(function (err) {
+            console.log(err)
+          })
+
+        $("#create-contact-btn").attr("disabled", true)
+        $(".alert").hide()
+        console.log("#create-contact-btn clicked")
+        // $("#success-alert").fadeIn("slow")
+        $("#create-contact-btn").attr("disabled", false)
+        $("#contact-notes").append(`<p>${$("#new-note").val()}<p>`)
+        $("#new-note").val("")
+      })
+
+      // CLOSE ALERT
+      $("#close-alert").click(function () {
+        $(".alert").fadeOut("fast")
+      })
+    </script>
+  </body>
+</html>
