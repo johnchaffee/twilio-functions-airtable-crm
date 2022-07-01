@@ -235,7 +235,7 @@
 
             let contactNotes = ""
             if (contact.fields.notes != undefined) {
-              const notesArray = contact.fields.notes.split("\n")
+              const notesArray = contact.fields.notes.split("\n").sort()
               notesArray.forEach((note) => {
                 contactNotes += `<p>${note}<p>`
               })
@@ -284,17 +284,18 @@
 
         // Set today's date on Date picker
         let rightNow = new Date()
-        // console.log("RIGHTNOW: " + rightNow)
         let year = rightNow.getFullYear()
-        // console.log("year: " + year)
         let month = rightNow.getMonth() + 1
         month = ("0" + month).slice(-2)
-        // console.log("month: " + month)
         let day = rightNow.getDate()
         day = ("0" + day).slice(-2)
-        // console.log("day: " + day)
-        let myDate = year + "-" + month + "-" + day
+        let hour = rightNow.getHours()
+        let minute = rightNow.getMinutes()
+        let myDate = `${year}-${month}-${day}`
         console.log("myDate: " + myDate)
+        let myTime = `${myDate} ${hour}:${minute}`
+        console.log("myTime: " + myTime)
+
         $("#date").attr("value", myDate)
 
         $("#create-appointment-btn").click(function (event) {
@@ -308,7 +309,7 @@
           console.log("CREATE APPOINTMENT > CONTACT", contact)
           let contactId = contact.id
           let updateField = "appointments"
-          let updateValue = `${$("#date").val()}: ${$("#serviceType").val()}`
+          let updateValue = `${$("#date").val()} ${$("#time").val()}: ${$("#serviceType").val()}`
           updateRecordById(contactId, updateField, updateValue)
             .then(function () {
               console.log("THEN UPDATE RECORD BY ID > APPOINTMENTS")
@@ -323,7 +324,7 @@
             })
 
           $("#appointment-history").append(
-            `<p>${$("#date").val()}: ${$("#serviceType").val()}<p>`
+            `<p>${$("#date").val()} ${$("#time").val()}: ${$("#serviceType").val()}<p>`
           )
         })
 
@@ -337,7 +338,7 @@
           console.log("ADD NOTE > CONTACT", contact)
           let contactId = contact.id
           let updateField = "notes"
-          let updateValue = `${$("#new-note").val()}`
+          let updateValue = `${myTime}: ${$("#new-note").val()}`
           updateRecordById(contactId, updateField, updateValue)
             .then(function () {
               console.log("THEN UPDATE RECORD BY ID > NOTES")
@@ -352,7 +353,7 @@
             })
 
           $("#add-notes-btn").attr("disabled", false)
-          $("#contact-notes").append(`<p>${$("#new-note").val()}<p>`)
+          $("#contact-notes").append(`<p>${updateValue}<p>`)
           $("#new-note").val("")
         })
 
