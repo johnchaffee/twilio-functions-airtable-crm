@@ -54,7 +54,6 @@
                         id="phone"
                         name="phone"
                         placeholder="phone"
-                        readonly
                       />
                     </p>
                     <p>
@@ -109,15 +108,18 @@
       $("#create-contact-btn").click(function (event) {
         event.preventDefault()
 
+        let thisPhone
+
         // CREATE CONTACT
         const createContact = async () => {
           console.log("GET RECORD BY ID")
+          thisPhone = $("#phone").val().length > 0 ? $("#phone").val() : "+12065551212"
           const newRecord = {
             fields: {
               first: $("#first").val(),
               last: $("#last").val(),
               company: $("#company").val(),
-              phone: $("#phone").val(),
+              phone: thisPhone,
               email: $("#email").val(),
               notes: $("#notes").val(),
             },
@@ -142,7 +144,7 @@
         createContact()
           .then(function () {
             console.log("CREATE CONTACT THEN REDIRECT TO VIEW")
-            window.location = `./view.html?table=contacts&field=phone&value=${$("#phone").val()}`
+            window.location = `./view.html?table=contacts&field=phone&value=${thisPhone}`
           })
           .catch(function (err) {
             console.log(err)
