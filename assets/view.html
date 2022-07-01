@@ -16,7 +16,7 @@
   <body>
     <div class="container">
       <div id="main-column" class="col-sm-12">
-        <a href="/index.html">&larr; List</a>  
+        <a href="/index.html">&larr; List</a>
         <div class="row">
           <div class="col">
             <div class="pt-3">
@@ -72,7 +72,7 @@
                       ><br />
                       <select id="serviceType">
                         <option value="Tire Repair">Tire Repair</option>
-                        <option value="Replace Tires">Replace Tires</option>
+                        <option value="New Tires">New Tires</option>
                         <option value="Brake Repair">Brake Repair</option>
                         <option value="Oil Change">Oil Change</option></select
                       ><br />
@@ -159,14 +159,13 @@
           console.log("Query param %s not found", paramName)
         }
 
-        // Load first sample contact from ../js/sample-contacts.js
-        // let contact = contacts[0]
+        let contact
+        console.log("LET CONTACT", contact)
 
-        // GET RECORD BY ID
+        // GET RECORD BY FIELD
         const getRecordByField = async (field, value) => {
-          console.log("GET RECORD BY ID")
+          console.log("GET RECORD BY FIELD")
           const options = {
-            // url: `https://api.airtable.com/v0/${airtableBaseId}/${table}/${id}`,
             url: `./view?table=contacts&field=${field}&value=${encodeURIComponent(
               value
             )}`,
@@ -177,7 +176,7 @@
             const { data } = await axios(options)
             const record = data
             contact = record
-            console.log("CONTACT:", contact)
+            console.log("GET RECORD BY FIELD > CONTACT:", contact)
             console.log("CONTACT.LENGTH:", contact.length)
           } catch (err) {
             console.log("ERROR FETCHING CONTACT FROM AIRTABLE")
@@ -198,101 +197,163 @@
           .catch(function (err) {
             console.log(err)
           })
-      })
 
-      function buildView(contact) {
-        console.log("BUILD VIEW")
-        console.log(contact)
-        let fullName = contact.fields.name
-        $("#contact-details").ready(function () {
-          let contactDetails = ""
-          let contactImage = contact.fields.image
-            ? contact.fields.image[0].url
-            : "./images/contact.jpeg"
-          contactDetails +=
-            '<p><img width="150px" src="' +
-            contactImage +
-            '" alt="Picture"></p>' +
-            "<b>" +
-            fullName +
-            "</b>" +
-            "<p>Ph: " +
-            formatNumber(contact.fields.phone) +
-            "<br>Email: " +
-            contact.fields.email +
-            "</p>" +
-            "<p>" +
-            "123 Main Street" +
-            "<br>" +
-            "Seattle" +
-            ", " +
-            "WA" +
-            " " +
-            "98104" +
-            "</p>"
-          $("#contact-details").html(contactDetails)
+        function buildView(contact) {
+          console.log("BUILD VIEW")
+          console.log(contact)
+          let fullName = contact.fields.name
+          $("#contact-details").ready(function () {
+            let contactDetails = ""
+            let contactImage = contact.fields.image
+              ? contact.fields.image[0].url
+              : "./images/contact.jpeg"
+            contactDetails +=
+              '<p><img width="150px" src="' +
+              contactImage +
+              '" alt="Picture"></p>' +
+              "<b>" +
+              fullName +
+              "</b>" +
+              "<p>Ph: " +
+              formatNumber(contact.fields.phone) +
+              "<br>Email: " +
+              contact.fields.email +
+              "</p>" +
+              "<p>" +
+              "123 Main Street" +
+              "<br>" +
+              "Seattle" +
+              ", " +
+              "WA" +
+              " " +
+              "98104" +
+              "</p>"
+            $("#contact-details").html(contactDetails)
 
-          let contactNotes = ""
-          if (contact.fields.notes != undefined) {
-            const notesArray = contact.fields.notes.split("\n")
-            notesArray.forEach((note) => {
-              contactNotes += `<p>${note}<p>`
-            })
-            $("#contact-notes").html(contactNotes)
+            let contactNotes = ""
+            if (contact.fields.notes != undefined) {
+              const notesArray = contact.fields.notes.split("\n")
+              notesArray.forEach((note) => {
+                contactNotes += `<p>${note}<p>`
+              })
+              $("#contact-notes").html(contactNotes)
+            }
+
+            let appointmentHistory = ""
+            if (contact.fields.appointments != undefined) {
+              const appointmentsArray = contact.fields.appointments.split("\n")
+              appointmentsArray.forEach((appointment) => {
+                appointmentHistory += `<p>${appointment}<p>`
+              })
+            }
+            $("#appointment-history").html(appointmentHistory)
+          })
+        }
+
+        // UPDATE RECORD BY ID
+        const updateRecordById = async (
+          contactId,
+          updateField,
+          updateValue
+        ) => {
+          console.log("UPDATE RECORD BY ID")
+          const options = {
+            url: `./update?table=contacts&id=${contactId}&field=${updateField}&value=${encodeURIComponent(
+              updateValue
+            )}`,
+            method: "GET",
           }
-
-          let appointmentHistory = ""
-          if (contact.fields.appointments != undefined) {
-            const appointmentsArray = contact.fields.appointments.split("\n")
-            appointmentsArray.forEach((appointment) => {
-              appointmentHistory += `<p>${appointment}<p>`
-            })
+          console.log("options:", options)
+          try {
+            const { data } = await axios(options)
+            const { record } = data
+            contact = record
+            console.log("UPDATE RECORD BY ID > CONTACT:", contact)
+            console.log("CONTACT.LENGTH:", contact.length)
+          } catch (err) {
+            console.log("ERROR FETCHING CONTACT FROM AIRTABLE")
+            console.error(err)
           }
-          $("#appointment-history").html(appointmentHistory)
+        }
+
+        // Set today's date on Date picker
+        let rightNow = new Date()
+        // console.log("RIGHTNOW: " + rightNow)
+        let year = rightNow.getFullYear()
+        // console.log("year: " + year)
+        let month = rightNow.getMonth() + 1
+        month = ("0" + month).slice(-2)
+        // console.log("month: " + month)
+        let day = rightNow.getDate()
+        day = ("0" + day).slice(-2)
+        // console.log("day: " + day)
+        let myDate = year + "-" + month + "-" + day
+        console.log("myDate: " + myDate)
+        $("#date").attr("value", myDate)
+
+        $("#create-appointment-btn").click(function (event) {
+          event.preventDefault()
+          $("#create-appointment-btn").attr("disabled", true)
+          $(".alert").hide()
+          console.log("#create-appointment-btn clicked")
+          // $("#success-alert").fadeIn("slow")
+          $("#create-appointment-btn").attr("disabled", false)
+
+          console.log("CREATE APPOINTMENT > CONTACT", contact)
+          let contactId = contact.id
+          let updateField = "appointments"
+          let updateValue = `${$("#date").val()}: ${$("#serviceType").val()}`
+          updateRecordById(contactId, updateField, updateValue)
+            .then(function () {
+              console.log("THEN UPDATE RECORD BY ID > APPOINTMENTS")
+              if (contact.length != 0) {
+                console.log("RECORD UPDATED")
+              } else {
+                console.log("RECORD NOT UPDATED")
+              }
+            })
+            .catch(function (err) {
+              console.log(err)
+            })
+
+          $("#appointment-history").append(
+            `<p>${$("#date").val()}: ${$("#serviceType").val()}<p>`
+          )
         })
-      }
 
-      // Set today's date on Date picker
-      let rightNow = new Date()
-      // console.log("RIGHTNOW: " + rightNow)
-      let year = rightNow.getFullYear()
-      // console.log("year: " + year)
-      let month = rightNow.getMonth() + 1
-      month = ("0" + month).slice(-2)
-      // console.log("month: " + month)
-      let day = rightNow.getDate()
-      day = ("0" + day).slice(-2)
-      // console.log("day: " + day)
-      let myDate = year + "-" + month + "-" + day
-      console.log("myDate: " + myDate)
-      $("#date").attr("value", myDate)
+        $("#add-notes-btn").click(function (event) {
+          event.preventDefault()
+          $("#add-notes-btn").attr("disabled", true)
+          $(".alert").hide()
+          console.log("#add-notes-btn clicked")
+          // $("#success-alert").fadeIn("slow")
 
-      $("#create-appointment-btn").click(function (event) {
-        event.preventDefault()
-        $("#create-appointment-btn").attr("disabled", true)
-        $(".alert").hide()
-        console.log("#create-appointment-btn clicked")
-        // $("#success-alert").fadeIn("slow")
-        $("#create-appointment-btn").attr("disabled", false)
-        $("#appointment-history").append(
-          `<p>${$("#date").val()}: ${$("#serviceType").val()}<p>`
-        )
-      })
+          console.log("ADD NOTE > CONTACT", contact)
+          let contactId = contact.id
+          let updateField = "notes"
+          let updateValue = `${$("#new-note").val()}`
+          updateRecordById(contactId, updateField, updateValue)
+            .then(function () {
+              console.log("THEN UPDATE RECORD BY ID > NOTES")
+              if (contact.length != 0) {
+                console.log("RECORD UPDATED")
+              } else {
+                console.log("RECORD NOT UPDATED")
+              }
+            })
+            .catch(function (err) {
+              console.log(err)
+            })
 
-      $("#add-notes-btn").click(function (event) {
-        event.preventDefault()
-        $("#add-notes-btn").attr("disabled", true)
-        $(".alert").hide()
-        console.log("#add-notes-btn clicked")
-        // $("#success-alert").fadeIn("slow")
-        $("#add-notes-btn").attr("disabled", false)
-        $("#contact-notes").append(`<p>${$("#new-note").val()}<p>`)
-        $("#new-note").val("")
-      })
+          $("#add-notes-btn").attr("disabled", false)
+          $("#contact-notes").append(`<p>${$("#new-note").val()}<p>`)
+          $("#new-note").val("")
+        })
 
-      // CLOSE ALERT
-      $("#close-alert").click(function () {
-        $(".alert").fadeOut("fast")
+        // CLOSE ALERT
+        $("#close-alert").click(function () {
+          $(".alert").fadeOut("fast")
+        })
       })
     </script>
   </body>
