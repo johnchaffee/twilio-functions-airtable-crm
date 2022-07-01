@@ -20,7 +20,6 @@ exports.handler = function (context, event, callback) {
 
   // Instantiate airtable object
   const base = new airtable({apiKey: context['AIRTABLE_API_KEY']}).base(context['AIRTABLE_BASE_ID']);
-  // const base = new airtable({apiKey: event.request.cookies.airtableApiKey}).base(event.request.cookies.airtableBaseId);
 
   console.log("event is ==> ", event);
 

@@ -26,7 +26,6 @@ exports.handler = function (context, event, callback) {
 
   // Instantiate airtable object
   const base = new airtable({apiKey: context['AIRTABLE_API_KEY']}).base(context['AIRTABLE_BASE_ID']);
-  // const base = new airtable({apiKey: event.request.cookies.airtableApiKey}).base(event.request.cookies.airtableBaseId);
   
   // Number of records to return set to 5 if no value passed in event
   let numberRecords = event.numberRecords ? parseInt(event.numberRecords) : 25;

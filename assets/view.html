@@ -16,6 +16,7 @@
   <body>
     <div class="container">
       <div id="main-column" class="col-sm-12">
+        <a href="/index.html">&larr; List</a>  
         <div class="row">
           <div class="col">
             <div class="pt-3">
@@ -33,17 +34,13 @@
                   <!-- Notes go here -->
                 </div>
                 <hr />
-                <form id="new-note" class="" action="#">
+                <form action="#">
                   <div class="form-group">
-                    <textarea
-                      id="append-notes"
-                      name="new-note"
-                      rows="4"
-                    ></textarea>
+                    <textarea id="new-note" name="new-note" rows="4"></textarea>
                     <br />
                     <a
-                      id="confirm-notes"
-                      class="submit btn btn-primary mt-1"
+                      id="add-notes-btn"
+                      class="submit btn btn-primary mt-2"
                       href="#"
                       >Add Notes</a
                     >
@@ -56,8 +53,8 @@
             <div class="pt-3">
               <div class="border p-3 bg-light">
                 <h4>New Appointment</h4>
-                <div class="pt-3">
-                  <form id="claim-form" class="" action="#">
+                <div class="pt-1">
+                  <form action="#">
                     <div class="form-group">
                       <input
                         id="date"
@@ -74,14 +71,14 @@
                       <label for="serviceType" class="mt-2">Service type:</label
                       ><br />
                       <select id="serviceType">
-                        <option value="tire-repair">Tire Repair</option>
-                        <option value="replace-tires">Replace Tires</option>
-                        <option value="replace-brakes">Replace Brakes</option>
-                        <option value="oil-change">Oil Change</option></select
+                        <option value="Tire Repair">Tire Repair</option>
+                        <option value="Replace Tires">Replace Tires</option>
+                        <option value="Brake Repair">Brake Repair</option>
+                        <option value="Oil Change">Oil Change</option></select
                       ><br />
                       <a
-                        id="create-appointment"
-                        class="submit btn btn-primary mt-3"
+                        id="create-appointment-btn"
+                        class="submit btn btn-primary mt-2"
                         href="#"
                         >Create Appointment</a
                       >
@@ -135,7 +132,6 @@
         </div>
       </div>
     </div>
-    <!-- <script src="./js/sampleContacts.js"></script> -->
     <script src="./js/phoneFormat.js"></script>
     <!-- Axios library -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -184,9 +180,7 @@
             console.log("CONTACT:", contact)
             console.log("CONTACT.LENGTH:", contact.length)
           } catch (err) {
-            console.log(
-              "ERROR FETCHING CONTACT FROM AIRTABLE, USING SAMPLE CONTACT"
-            )
+            console.log("ERROR FETCHING CONTACT FROM AIRTABLE")
             console.error(err)
           }
         }
@@ -197,21 +191,13 @@
             if (contact.length != 0) {
               buildView(contact)
             } else {
-              console.log("DISPLAY MODAL")
-              // Display modal
+              console.log("RECORD NOT FOUND - REDIRECT TO NEW")
+              window.location = `./new.html?phone=${encodeURIComponent(value)}`
             }
           })
           .catch(function (err) {
             console.log(err)
           })
-
-        $("#myInput").on("keyup", function () {
-          let value = $(this).val().toLowerCase()
-
-          $("#contacts-table-body tr").filter(function () {
-            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-          })
-        })
       })
 
       function buildView(contact) {
@@ -220,7 +206,9 @@
         let fullName = contact.fields.name
         $("#contact-details").ready(function () {
           let contactDetails = ""
-          let contactImage = contact.fields.image ? contact.fields.image[0].url : "./images/contact.jpeg"
+          let contactImage = contact.fields.image
+            ? contact.fields.image[0].url
+            : "./images/contact.jpeg"
           contactDetails +=
             '<p><img width="150px" src="' +
             contactImage +
@@ -279,13 +267,27 @@
       console.log("myDate: " + myDate)
       $("#date").attr("value", myDate)
 
-      $("#create-appointment").click(function (event) {
+      $("#create-appointment-btn").click(function (event) {
         event.preventDefault()
-        $("#create-appointment").attr("disabled", true)
+        $("#create-appointment-btn").attr("disabled", true)
         $(".alert").hide()
-        console.log("#create-appointment clicked")
-        $("#success-alert").fadeIn("slow")
-        $("#create-appointment").attr("disabled", false)
+        console.log("#create-appointment-btn clicked")
+        // $("#success-alert").fadeIn("slow")
+        $("#create-appointment-btn").attr("disabled", false)
+        $("#appointment-history").append(
+          `<p>${$("#date").val()}: ${$("#serviceType").val()}<p>`
+        )
+      })
+
+      $("#add-notes-btn").click(function (event) {
+        event.preventDefault()
+        $("#add-notes-btn").attr("disabled", true)
+        $(".alert").hide()
+        console.log("#add-notes-btn clicked")
+        // $("#success-alert").fadeIn("slow")
+        $("#add-notes-btn").attr("disabled", false)
+        $("#contact-notes").append(`<p>${$("#new-note").val()}<p>`)
+        $("#new-note").val("")
       })
 
       // CLOSE ALERT
