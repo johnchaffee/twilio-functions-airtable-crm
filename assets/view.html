@@ -19,34 +19,78 @@
         <div class="row">
           <div class="col">
             <div class="pt-3">
-              <div id="contact-details" class="border p-4 bg-light">
-                <p>
-                  <!-- Put contact details here -->
-                </p>
+              <div class="border p-3 bg-light">
+                <h4>Contact Info</h4>
+                <div id="contact-details" class="">
+                  <!-- Contact Details go here -->
+                </div>
+              </div>
+            </div>
+            <div class="pt-3">
+              <div class="border p-3 bg-light">
+                <h4>Notes</h4>
+                <div id="contact-notes" class="">
+                  <!-- Notes go here -->
+                </div>
+                <hr />
+                <form id="new-note" class="" action="#">
+                  <div class="form-group">
+                    <textarea
+                      id="append-notes"
+                      name="new-note"
+                      rows="4"
+                    ></textarea>
+                    <br />
+                    <a
+                      id="confirm-notes"
+                      class="submit btn btn-primary mt-1"
+                      href="#"
+                      >Add Notes</a
+                    >
+                  </div>
+                </form>
               </div>
             </div>
           </div>
           <div class="col">
             <div class="pt-3">
-              <form id="claim-form" class="border p-4 bg-light" action="#">
-                <h4>Pickup Time</h4>
-                <div class="form-group">
-                  <input id="date" type="date" name="date" class="mb-2" /><br />
-                  <input
-                    id="time"
-                    type="time"
-                    name="time"
-                    value="09:00"
-                  /><br />
-                  <a
-                    id="confirm-order"
-                    class="submit btn btn-orange mt-3"
-                    href="#"
-                    >Confirm Pickup Time</a
-                  >
+              <div class="border p-3 bg-light">
+                <h4>New Appointment</h4>
+                <div class="pt-3">
+                  <form id="claim-form" class="" action="#">
+                    <div class="form-group">
+                      <input
+                        id="date"
+                        type="date"
+                        name="date"
+                        class="mb-2"
+                      /><br />
+                      <input
+                        id="time"
+                        type="time"
+                        name="time"
+                        value="09:00"
+                      /><br />
+                      <label for="serviceType" class="mt-2">Service type:</label
+                      ><br />
+                      <select id="serviceType">
+                        <option value="tire-repair">Tire Repair</option>
+                        <option value="replace-tires">Replace Tires</option>
+                        <option value="replace-brakes">Replace Brakes</option>
+                        <option value="oil-change">Oil Change</option></select
+                      ><br />
+                      <a
+                        id="confirm-order"
+                        class="submit btn btn-primary mt-3"
+                        href="#"
+                        >Confirm Appointment</a
+                      >
+                    </div>
+                  </form>
                 </div>
-              </form>
+              </div>
             </div>
+
             <div
               id="success-alert"
               class="mt-3 alert alert-success alert-dismissible"
@@ -55,7 +99,7 @@
               <button id="close-alert" type="button" class="close">
                 &times;
               </button>
-              <strong>Ride Scheduled</strong>
+              <strong>Appointment Scheduled</strong>
             </div>
             <div
               id="failed-alert"
@@ -65,167 +109,180 @@
               <button id="close-alert" type="button" class="close">
                 &times;
               </button>
-              <strong>We're out of hot dogs!</strong>
+              <strong>Appointment NOT scheduled</strong>
+            </div>
+            <div class="pt-3">
+              <div class="border p-3 bg-light">
+                <h4>Appointment History</h4>
+                <div class="pt-3">
+                  <div id="appointment-history" class="">
+                    <p>Appointments go here</p>
+                    <p>Appointments go here</p>
+                    <p>Appointments go here</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pt-3">
+              <div class="border p-3 bg-light">
+                <h4>Communication Log</h4>
+                <div class="pt-3">
+                  <div id="communication-log" class="">
+                    <p>Calls go here</p>
+                    <p>Chats go here</p>
+                    <p>Messages go here</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <script src="./js/sampleContacts.js"></script>
-        <script src="./js/phoneFormat.js"></script>
-        <!-- Axios library -->
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script>
-          $(document).ready(function () {
-            console.log("details.html > script > DOCUMENT.READY")
-            const params = window.location.search
-            console.log("PARAMS: " + params)
-            const id = getParam("id")
-            console.log("getParams ID: " + id)
-            const field = getParam("field")
-            console.log("getParams field: " + field)
-            const value = getParam("value")
-            console.log("getParams value: " + value)
-            let rides = ["Economy", "Deluxe", "Carpool"]
-            let ride = rides[Math.floor(Math.random() * rides.length)]
-            let ratings = ["3 Stars", "4 Stars", "5 Stars"]
-            let rating = ratings[Math.floor(Math.random() * ratings.length)]
-            let notes = `Rating: <b>${rating}</b><br>Preferred ride: <b>${ride}</b>`
-
-            function getParam(paramName) {
-              let query = window.location.search.substring(1)
-              let params = query.split("&")
-              for (let i = 0; i < params.length; i++) {
-                let pair = params[i].split("=")
-                if (decodeURIComponent(pair[0]) == paramName) {
-                  return decodeURIComponent(pair[1])
-                }
-              }
-              console.log("Query param %s not found", paramName)
-            }
-
-            const table = "contacts"
-            console.log("table:", table)
-
-            // Load first sample contact from ../js/sample-contacts.js
-            contact = contacts[0]
-
-            // GET RECORD BY ID
-            const getRecordByField = async (field, value) => {
-              console.log("GET RECORD BY ID")
-              const options = {
-                // url: `https://api.airtable.com/v0/${airtableBaseId}/${table}/${id}`,
-                url: `./view?table=${table}&field=${field}&value=${encodeURIComponent(value)}`,
-                method: "GET",
-              }
-              console.log("options:", options)
-              try {
-                const { data } = await axios(options)
-                const record = data
-                contact = record
-                console.log("CONTACT:", contact)
-              } catch (err) {
-                console.log(
-                  "ERROR FETCHING CONTACT FROM AIRTABLE, USING SAMPLE CONTACT"
-                )
-                console.error(err)
-              }
-            }
-
-            getRecordByField(field, value)
-              .then(function () {
-                console.log("GET RECORD BY ID THEN BUILD VIEW")
-                buildView(contact)
-              })
-              .catch(function (err) {
-                console.log(err)
-              })
-
-            $("#myInput").on("keyup", function () {
-              let value = $(this).val().toLowerCase()
-
-              $("#contacts-table-body tr").filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-              })
-            })
-          })
-
-          function buildView(contact) {
-            console.log("BUILD VIEW")
-            console.log(contact)
-            let fullName = contact.fields.name
-            $("#contact-details").ready(function () {
-              let contactDetails = ""
-              contactDetails +=
-                '<p><img width="200px" src="' +
-                contact.fields.image[0].url +
-                '" alt="Picture"></p>' +
-                "<h3>" +
-                fullName +
-                "</h3>" +
-                "<p>Ph: " +
-                formatNumber(contact.fields.phone) +
-                "<br>Email: " +
-                contact.fields.email +
-                "</p>" +
-                "<p>" +
-                "Fake street name" +
-                "<br>" +
-                "City" +
-                ", " +
-                "State" +
-                " " +
-                "Zip" +
-                "</p>" +
-                "<hr>" +
-                "<p>" +
-                contact.fields.notes +
-                "<p>"
-              console.log("CONTACT DETAILS HTML:")
-              console.log(contactDetails)
-              $("#contact-details").html(contactDetails)
-            })
-          }
-
-          let rightNow = new Date()
-          // console.log("RIGHTNOW: " + rightNow)
-          let year = rightNow.getFullYear()
-          // console.log("year: " + year)
-          let month = rightNow.getMonth() + 1
-          month = ("0" + month).slice(-2)
-          // console.log("month: " + month)
-          let day = rightNow.getDate()
-          day = ("0" + day).slice(-2)
-          // console.log("day: " + day)
-          let myDate = year + "-" + month + "-" + day
-          console.log("myDate: " + myDate)
-          $("#date").attr("value", myDate)
-
-          $("#confirm-order").click(function (event) {
-            event.preventDefault()
-            $("#confirm-order").attr("disabled", true)
-            $(".alert").hide()
-            console.log("#confirm-order clicked")
-
-            // FAILED ALERT
-            if ($("#hotdog").is(":checked")) {
-              $("#failed-alert").fadeIn("slow")
-            } else {
-              $("#success-alert").fadeIn("slow")
-            }
-            $("#confirm-order").attr("disabled", false)
-          })
-
-          $("#hotdog").click(function (event) {
-            $(".alert").hide()
-            console.log("#hotdog clicked")
-            $("#failed-alert").fadeIn("slow")
-          })
-
-          // CLOSE ALERT
-          $("#close-alert").click(function () {
-            $(".alert").fadeOut("fast")
-          })
-        </script>
       </div>
     </div>
+    <script src="./js/sampleContacts.js"></script>
+    <script src="./js/phoneFormat.js"></script>
+    <!-- Axios library -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        console.log("details.html > script > DOCUMENT.READY")
+        const params = window.location.search
+        console.log("PARAMS: " + params)
+        const id = getParam("id")
+        console.log("getParams ID: " + id)
+        const field = getParam("field")
+        console.log("getParams field: " + field)
+        const value = getParam("value")
+        console.log("getParams value: " + value)
+
+        function getParam(paramName) {
+          let query = window.location.search.substring(1)
+          let params = query.split("&")
+          for (let i = 0; i < params.length; i++) {
+            let pair = params[i].split("=")
+            if (decodeURIComponent(pair[0]) == paramName) {
+              return decodeURIComponent(pair[1])
+            }
+          }
+          console.log("Query param %s not found", paramName)
+        }
+
+        const table = "contacts"
+        console.log("table:", table)
+
+        // Load first sample contact from ../js/sample-contacts.js
+        contact = contacts[0]
+
+        // GET RECORD BY ID
+        const getRecordByField = async (field, value) => {
+          console.log("GET RECORD BY ID")
+          const options = {
+            // url: `https://api.airtable.com/v0/${airtableBaseId}/${table}/${id}`,
+            url: `./view?table=${table}&field=${field}&value=${encodeURIComponent(
+              value
+            )}`,
+            method: "GET",
+          }
+          console.log("options:", options)
+          try {
+            const { data } = await axios(options)
+            const record = data
+            contact = record
+            console.log("CONTACT:", contact)
+          } catch (err) {
+            console.log(
+              "ERROR FETCHING CONTACT FROM AIRTABLE, USING SAMPLE CONTACT"
+            )
+            console.error(err)
+          }
+        }
+
+        getRecordByField(field, value)
+          .then(function () {
+            console.log("GET RECORD BY ID THEN BUILD VIEW")
+            buildView(contact)
+          })
+          .catch(function (err) {
+            console.log(err)
+          })
+
+        $("#myInput").on("keyup", function () {
+          let value = $(this).val().toLowerCase()
+
+          $("#contacts-table-body tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          })
+        })
+      })
+
+      function buildView(contact) {
+        console.log("BUILD VIEW")
+        console.log(contact)
+        let fullName = contact.fields.name
+        $("#contact-details").ready(function () {
+          let contactDetails = ""
+          contactDetails +=
+            '<p><img width="150px" src="' +
+            contact.fields.image[0].url +
+            '" alt="Picture"></p>' +
+            "<b>" +
+            fullName +
+            "</b>" +
+            "<p>Ph: " +
+            formatNumber(contact.fields.phone) +
+            "<br>Email: " +
+            contact.fields.email +
+            "</p>" +
+            "<p>" +
+            "Fake street name" +
+            "<br>" +
+            "City" +
+            ", " +
+            "State" +
+            " " +
+            "Zip" +
+            "</p>"
+          console.log("CONTACT DETAILS HTML:")
+          console.log(contactDetails)
+          $("#contact-details").html(contactDetails)
+          const notesArray = contact.fields.notes.split("\n")
+          let contactNotes = ""
+          notesArray.forEach((note) => {
+            contactNotes += `<p>${note}<p>`
+          })
+          console.log("CONTACT NOTES HTML:")
+          console.log(contactNotes)
+          $("#contact-notes").html(contactNotes)
+        })
+      }
+
+      let rightNow = new Date()
+      // console.log("RIGHTNOW: " + rightNow)
+      let year = rightNow.getFullYear()
+      // console.log("year: " + year)
+      let month = rightNow.getMonth() + 1
+      month = ("0" + month).slice(-2)
+      // console.log("month: " + month)
+      let day = rightNow.getDate()
+      day = ("0" + day).slice(-2)
+      // console.log("day: " + day)
+      let myDate = year + "-" + month + "-" + day
+      console.log("myDate: " + myDate)
+      $("#date").attr("value", myDate)
+
+      $("#confirm-order").click(function (event) {
+        event.preventDefault()
+        $("#confirm-order").attr("disabled", true)
+        $(".alert").hide()
+        console.log("#confirm-order clicked")
+        $("#success-alert").fadeIn("slow")
+        $("#confirm-order").attr("disabled", false)
+      })
+
+      // CLOSE ALERT
+      $("#close-alert").click(function () {
+        $(".alert").fadeOut("fast")
+      })
+    </script>
   </body>
 </html>
