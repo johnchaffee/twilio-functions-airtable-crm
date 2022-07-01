@@ -33,16 +33,23 @@ exports.handler = function (context, event, callback) {
     context["AIRTABLE_BASE_ID"]
   )
 
+  const first = event.fields.first ||= ""
+  const last = event.fields.last ||= ""
+  const company = event.fields.company ||= ""
+  const phone = event.fields.phone ||= ""
+  const email = event.fields.email ||= ""
+  const notes = event.fields.notes ||= ""
+
   base(event.table).create(
     [
       {
         fields: {
-          first: event.fields.first,
-          last: event.fields.last,
-          company: event.fields.company,
-          phone: event.fields.phone,
-          email: event.fields.email,
-          notes: event.fields.notes,
+          first,
+          last,
+          company,
+          phone,
+          email,
+          notes,
         },
       },
     ],
