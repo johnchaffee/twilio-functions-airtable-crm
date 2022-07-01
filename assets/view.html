@@ -201,33 +201,36 @@
         function buildView(contact) {
           console.log("BUILD VIEW")
           console.log(contact)
-          let fullName = contact.fields.name
           $("#contact-details").ready(function () {
             let contactDetails = ""
             let contactImage = contact.fields.image
               ? contact.fields.image[0].url
               : "./images/contact.jpeg"
+            let name =
+              contact.fields.name && contact.fields.name.length > 1
+                ? `<b>${contact.fields.name}</b><br>`
+                : ""
+            let phone =
+              contact.fields.phone && contact.fields.phone.length > 0
+                ? `${formatNumber(contact.fields.phone)}<br>`
+                : ""
+            let company =
+              contact.fields.company && contact.fields.company.length > 0
+                ? `${contact.fields.company}<br>`
+                : ""
+            let email =
+              contact.fields.email && contact.fields.email.length > 0
+                ? `${contact.fields.email}<br>`
+                : ""
             contactDetails +=
-              '<p><img width="150px" src="' +
-              contactImage +
-              '" alt="Picture"></p>' +
-              "<b>" +
-              fullName +
-              "</b>" +
-              "<p>Ph: " +
-              formatNumber(contact.fields.phone) +
-              "<br>Email: " +
-              contact.fields.email +
-              "</p>" +
-              "<p>" +
-              "123 Main Street" +
-              "<br>" +
-              "Seattle" +
-              ", " +
-              "WA" +
-              " " +
-              "98104" +
-              "</p>"
+              `<p><img width="150px" src="${contactImage}" alt="Picture"></p>` +
+              `<p>` +
+              `${name}` +
+              `${company}` +
+              `${phone}` +
+              `${email}` +
+              `123 Main Street<br>Seattle, WA 98110` +
+              `</p>`
             $("#contact-details").html(contactDetails)
 
             let contactNotes = ""
@@ -241,7 +244,10 @@
 
             let appointmentHistory = ""
             if (contact.fields.appointments != undefined) {
-              const appointmentsArray = contact.fields.appointments.split("\n")
+              const appointmentsArray = contact.fields.appointments
+                .split("\n")
+                .sort()
+              console.log("APPOINTMENTS ARRAY", appointmentsArray)
               appointmentsArray.forEach((appointment) => {
                 appointmentHistory += `<p>${appointment}<p>`
               })
