@@ -50,13 +50,24 @@ exports.handler = function (context, event, callback) {
     console.log("RETRIEVED > APPOINTMENTS:", appointments)
     console.log("EVENT.FIELD:", event.field)
     if (event.field == "notes") {
-      fields.notes = `${notes}\n${event.value}`
+      if (notes) {
+        // append to existing notes
+        fields.notes = `${notes}\n${event.value}`
+      } else {
+        fields.notes = `${event.value}`
+      }
     } else {
       // If event.field != notes, it must equal appointments
-      fields.appointments = `${appointments}\n${event.value}`
+      if (appointments) {
+        // append to existing appointments
+        fields.appointments = `${appointments}\n${event.value}`
+      } else {
+        fields.appointments = `${event.value}`
+      }
     }
     console.log("FIELDS AFTER:", fields)
 
+    // Update field
     base(event.table).update(
       [
         {
