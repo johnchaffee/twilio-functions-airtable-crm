@@ -117,16 +117,16 @@
           let tableRows = ""
 
           contacts.forEach((contact) => {
-            let fullName = contact.fields.name
-            let company = contact.fields.company
-            let email = contact.fields.email
-            let phone = removeSpaces(contact.fields.phone)
+            let name = contact.fields.name ? contact.fields.name : ""
+            let company = contact.fields.company ? contact.fields.company : ""
+            let phone = contact.fields.phone ? removeSpaces(contact.fields.phone) : ""
+
 
             tableRows +=
               `<tr>` +
-              `<td name="fullName"><a class="text-body" href="./view.html?table=contacts&field=phone&value=${phone}">${fullName}</a></td>` +
-              `<td name="fullName"><a class="text-body" href="./view.html?table=contacts&field=phone&value=${phone}">${company}</a></td>` +
-              `<td name="fullName"><a class="text-body" href="./view.html?table=contacts&field=phone&value=${phone}">${formatNumber(
+              `<td name="name"><a class="text-body" href="./view.html?table=contacts&field=phone&value=${phone}">${name}</a></td>` +
+              `<td name="company"><a class="text-body" href="./view.html?table=contacts&field=phone&value=${phone}">${company}</a></td>` +
+              `<td name="phone"><a class="text-body" href="./view.html?table=contacts&field=phone&value=${phone}">${formatNumber(
                 phone
               )}</a></td>` +
               `</tr>`
