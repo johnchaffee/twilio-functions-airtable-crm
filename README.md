@@ -1,5 +1,11 @@
 # twilio-functions-airtable-crm
- Twilio function and browser CRM that fetches records from Airtable API
+
+Sample CRM that runs in browser and uses Airtable as a database. Can be embedded in Flex CRMcontainer.
+
+In order to fetch data from Airtable, you must store the following Twilio Function environment variables:
+
+- `AIRTABLE_API_KEY` - Your Airtable API Key
+- `AIRTABLE_BASE_ID` - Your Aitable Base ID
 
 ## CLI Commands
 
