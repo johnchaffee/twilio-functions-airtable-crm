@@ -118,12 +118,9 @@
             </div>
             <div class="pt-3">
               <div class="border p-3 bg-light">
-                <h4>Communication Log</h4>
+                <h4>Activity Log</h4>
                 <div class="pt-3">
-                  <div id="communication-log" class="">
-                    <p>Calls go here</p>
-                    <p>Chats go here</p>
-                    <p>Messages go here</p>
+                  <div id="activity-log" class="">
                   </div>
                 </div>
               </div>
@@ -253,6 +250,16 @@
               })
             }
             $("#appointment-history").html(appointmentHistory)
+
+            let activityLog = ""
+            if (contact.fields.activities != undefined) {
+              const activitiesArray = contact.fields.activities.split("\n").sort()
+              activitiesArray.forEach((activity) => {
+                activityLog += `<p>${activity}<p>`
+              })
+              $("#activity-log").html(activityLog)
+            }
+
           })
         }
 
