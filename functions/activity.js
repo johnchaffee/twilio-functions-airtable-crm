@@ -45,7 +45,9 @@ exports.handler = function (context, event, callback) {
   let day = rightNow.getDate()
   day = ("0" + day).slice(-2)
   let hour = rightNow.getHours()
+  hour = ("0" + hour).slice(-2)
   let minute = rightNow.getMinutes()
+  minute = ("0" + minute).slice(-2)
   let myDate = `${year}-${month}-${day}`
   console.log("myDate: " + myDate)
   let myTime = `${myDate} ${hour}:${minute}`
