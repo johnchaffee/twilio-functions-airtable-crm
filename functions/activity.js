@@ -41,12 +41,18 @@ exports.handler = function (context, event, callback) {
   let rightNow = new Date()
   let year = rightNow.getFullYear()
   let month = rightNow.getMonth() + 1
-  month = ("0" + month).slice(-2)
   let day = rightNow.getDate()
-  day = ("0" + day).slice(-2)
   let hour = rightNow.getHours()
-  hour = ("0" + hour).slice(-2)
   let minute = rightNow.getMinutes()
+  // Convert UTC Time to Pacific Time
+  hour = hour - 9
+  if (hour > 14) {
+    day = rightNow.getDate() -1
+  }
+  // Format month, day, hour, minute as 2-digits
+  month = ("0" + month).slice(-2)
+  day = ("0" + day).slice(-2)
+  hour = ("0" + hour).slice(-2)
   minute = ("0" + minute).slice(-2)
   let myDate = `${year}-${month}-${day}`
   console.log("myDate: " + myDate)
