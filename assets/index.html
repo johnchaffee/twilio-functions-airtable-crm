@@ -18,7 +18,13 @@
       <div id="main-column" class="col-sm-12">
         <div>
           <h3 class="float-left pt-3 mb-3">
-            <img src="/images/les-schwab-logo.png" height="36px" alt="Les Schwab Logo">
+            <a href="/index.html">
+              <img
+                src="/images/les-schwab-logo.png"
+                height="36px"
+                alt="Les Schwab Logo"
+              />
+            </a>
           </h3>
           <input
             type="text"
@@ -39,7 +45,7 @@
           </thead>
           <tbody id="contacts-table-body"></tbody>
         </table>
-        <a href="/new.html">New Contact</a>  
+        <a href="/new.html">New Contact</a>
       </div>
     </div>
     <script src="./js/phoneFormat.js"></script>
@@ -70,10 +76,7 @@
             //   console.log(record.fields)
             // })
           } catch (err) {
-            console.log(
-              "ERROR FETCHING CONTACTS FROM AIRTABLE\n" +
-                err
-            )
+            console.log("ERROR FETCHING CONTACTS FROM AIRTABLE\n" + err)
             // alert(err)
           }
         }
@@ -121,8 +124,9 @@
           contacts.forEach((contact) => {
             let name = contact.fields.name ? contact.fields.name : ""
             let company = contact.fields.company ? contact.fields.company : ""
-            let phone = contact.fields.phone ? removeSpaces(contact.fields.phone) : ""
-
+            let phone = contact.fields.phone
+              ? removeSpaces(contact.fields.phone)
+              : ""
 
             tableRows +=
               `<tr>` +
