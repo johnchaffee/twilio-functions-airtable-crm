@@ -45,8 +45,8 @@ exports.handler = function (context, event, callback) {
   let hour = rightNow.getHours()
   let minute = rightNow.getMinutes()
   // Convert UTC Time to Pacific Time
-  hour = hour - 9
-  if (hour > 14) {
+  hour = hour - 7
+  if (hour > 16) {
     day = rightNow.getDate() -1
   }
   // Format month, day, hour, minute as 2-digits
