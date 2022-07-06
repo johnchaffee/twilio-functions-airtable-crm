@@ -171,7 +171,7 @@
         }
 
         let contact
-        console.log("LET CONTACT", contact)
+        let e164Phone
 
         // GET RECORD BY FIELD
         const getRecordByField = async (field, value) => {
@@ -188,7 +188,6 @@
             const record = data
             contact = record
             console.log("GET RECORD BY FIELD > CONTACT:", contact)
-            console.log("CONTACT.LENGTH:", contact.length)
           } catch (err) {
             console.log("ERROR FETCHING CONTACT FROM AIRTABLE")
             console.error(err)
@@ -224,6 +223,10 @@
             let phone =
               contact.fields.phone && contact.fields.phone.length > 0
                 ? `${formatNumber(contact.fields.phone)}<br>`
+                : ""
+            e164Phone =
+              contact.fields.phone && contact.fields.phone.length > 0
+                ? contact.fields.phone
                 : ""
             let company =
               contact.fields.company && contact.fields.company.length > 0
@@ -297,10 +300,28 @@
             const { record } = data
             contact = record
             console.log("UPDATE RECORD BY ID > CONTACT:", contact)
-            console.log("CONTACT.LENGTH:", contact.length)
           } catch (err) {
             console.log("ERROR FETCHING CONTACT FROM AIRTABLE")
             console.error(err)
+          }
+        }
+
+        // SEND MESSAGE
+        const sendMessage = async (to, body) => {
+          console.log("ENTER AXIOS SEND MESSSAGE FUNCTION")
+          const options = {
+            url: `./sendMessage?to=${encodeURIComponent(
+              to
+            )}&body=${encodeURIComponent(body)}`,
+            method: "GET",
+          }
+          console.log("options:", options)
+          try {
+            // const { data } = await axios(options)
+            await axios(options)
+            console.log("END SUCCESSFUL AXIOS SEND MESSAGE FUNCTION")
+          } catch (err) {
+            console.error("ERROR IN AXIOS SEND MESSAGE FUNCTION:", err)
           }
         }
 
@@ -334,6 +355,7 @@
           let updateValue = `${$("#date").val()} ${$("#time").val()}: ${$(
             "#serviceType"
           ).val()}`
+          let messageBody = `Your Les Schwab ${$("#serviceType").val()} appointment has been scheduled for ${$("#date").val()} at ${$("#time").val()}`
           updateRecordById(contactId, updateField, updateValue)
             .then(function () {
               console.log("THEN UPDATE RECORD BY ID > APPOINTMENTS")
@@ -345,6 +367,14 @@
             })
             .catch(function (err) {
               console.log(err)
+            })
+
+          sendMessage(e164Phone, messageBody)
+            .then(function () {
+              console.log("CALL AXIOS SEND MESSAGE FUNCTION")
+            })
+            .catch(function (err) {
+              console.log("AXIOS SEND MESSAGE ERROR:", err)
             })
 
           $("#appointment-history").append(`<p>${updateValue}<p>`)
