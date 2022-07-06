@@ -16,7 +16,13 @@
   <body>
     <div class="container">
       <div id="main-column" class="col-sm-12">
-        <a href="/index.html">&larr; List</a>
+        <h3 class="pt-3 mb-0">
+          <img
+            src="/images/les-schwab-logo.png"
+            height="36px"
+            alt="Les Schwab Logo"
+          />
+        </h3>
         <div class="row">
           <div class="col">
             <div class="pt-3">
@@ -48,6 +54,7 @@
                 </form>
               </div>
             </div>
+            <a href="/index.html">List</a>
           </div>
           <div class="col">
             <div class="pt-3">
@@ -71,10 +78,17 @@
                       <label for="serviceType" class="mt-2">Service type:</label
                       ><br />
                       <select id="serviceType">
-                        <option value="Tire Repair">Tire Repair</option>
                         <option value="New Tires">New Tires</option>
-                        <option value="Brake Repair">Brake Repair</option>
-                        <option value="Oil Change">Oil Change</option></select
+                        <option value="Flat Repair">Flat Repair</option>
+                        <option value="Wheel Balance">Wheel Balance</option>
+                        <option value="Tire Rotation">Tire Rotation</option>
+                        <option value="Seasonal Changeover">
+                          Seasonal Changeover
+                        </option>
+                        <option value="TPMS Service">TPMS Service</option>
+                        <option value="Free Pre-Trip Safety Check">
+                          Free Pre-Trip Safety Check
+                        </option></select
                       ><br />
                       <a
                         id="create-appointment-btn"
@@ -120,8 +134,7 @@
               <div class="border p-3 bg-light">
                 <h4>Activity Log</h4>
                 <div class="pt-3">
-                  <div id="activity-log" class="">
-                  </div>
+                  <div id="activity-log" class=""></div>
                 </div>
               </div>
             </div>
@@ -253,13 +266,14 @@
 
             let activityLog = ""
             if (contact.fields.activities != undefined) {
-              const activitiesArray = contact.fields.activities.split("\n").sort()
+              const activitiesArray = contact.fields.activities
+                .split("\n")
+                .sort()
               activitiesArray.forEach((activity) => {
                 activityLog += `<p>${activity}<p>`
               })
               $("#activity-log").html(activityLog)
             }
-
           })
         }
 
@@ -316,7 +330,9 @@
           console.log("CREATE APPOINTMENT > CONTACT", contact)
           let contactId = contact.id
           let updateField = "appointments"
-          let updateValue = `${$("#date").val()} ${$("#time").val()}: ${$("#serviceType").val()}`
+          let updateValue = `${$("#date").val()} ${$("#time").val()}: ${$(
+            "#serviceType"
+          ).val()}`
           updateRecordById(contactId, updateField, updateValue)
             .then(function () {
               console.log("THEN UPDATE RECORD BY ID > APPOINTMENTS")
@@ -330,9 +346,7 @@
               console.log(err)
             })
 
-          $("#appointment-history").append(
-            `<p>${$("#date").val()} ${$("#time").val()}: ${$("#serviceType").val()}<p>`
-          )
+          $("#appointment-history").append(`<p>${updateValue}<p>`)
         })
 
         $("#add-notes-btn").click(function (event) {

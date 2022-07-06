@@ -16,7 +16,13 @@
   <body>
     <div class="container">
       <div id="main-column" class="col-sm-12">
-        <a href="/index.html">&larr; List</a>  
+        <h3 class="pt-3 mb-0">
+          <img
+            src="/images/les-schwab-logo.png"
+            height="36px"
+            alt="Les Schwab Logo"
+          />
+        </h3>
         <div class="row">
           <div class="col">
             <div class="pt-3">
@@ -76,6 +82,7 @@
                 </form>
               </div>
             </div>
+            <a href="/index.html">List</a>
           </div>
         </div>
       </div>
@@ -113,7 +120,8 @@
         // CREATE CONTACT
         const createContact = async () => {
           console.log("GET RECORD BY ID")
-          thisPhone = $("#phone").val().length > 0 ? $("#phone").val() : "+12065551212"
+          thisPhone =
+            $("#phone").val().length > 0 ? $("#phone").val() : "+12065551212"
           const newRecord = {
             fields: {
               first: $("#first").val(),
