@@ -5,6 +5,14 @@
 	},
 	"AC23a2ba4a4d5e3abcb8bb8fb3717177ef": {
 		"serviceSid": "ZSe6abb80d321007dc1185c769bb2bca0d",
-		"latestBuild": "ZB9c91b9312b49300efe4a2c74197aa48f"
+		"latestBuild": "ZB7fa5daa3350e121a73d392a3ed6231ae"
+	},
+	"ACdb6fe73a118680e3b12050d779266cca": {
+		"serviceSid": "ZS6ca58ca768cf6ae68e688e993e12b56d",
+		"latestBuild": "ZB219ecabd59e354afde0ac4e3c2ed4dae"
+	},
+	"ACd7267211e062aaa7a8125f7517e87a0e": {
+		"serviceSid": "ZS50127178232b52fafcd42b37599d0a78",
+		"latestBuild": "ZB0ca9473d851e49080156b16d9c5a84fe"
 	}
 }
