@@ -3,7 +3,6 @@ const accountSid = process.env.ACCOUNT_SID
 const authToken = process.env.AUTH_TOKEN
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER
 const author = process.env.AUTHOR
-// const webhookUrl = process.env.WEBHOOK_URL
 const client = require("twilio")(accountSid, authToken)
 let conversationSid = ""
 let activeConversation = false
@@ -91,21 +90,6 @@ exports.handler = function (context, event, callback) {
       .catch((error) => console.log(error))
   }
 
-  // async function createWebhook() {
-  //   await client.conversations.v1
-  //     .conversations(conversationSid)
-  //     .webhooks.create({
-  //       "configuration.method": "POST",
-  //       "configuration.filters": ["onMessageAdded"],
-  //       "configuration.url": webhookUrl,
-  //       target: "webhook",
-  //     })
-  //     .then((webhook) =>
-  //       console.log("\x1b[32m webhook.sid ==>", webhook.sid, "\x1b[0m")
-  //     )
-  //     .catch((error) => console.log(error))
-  // }
-
   // Run all the functions
   getActiveConversations().then(() => {
     if (activeConversation === false) {
@@ -113,9 +97,7 @@ exports.handler = function (context, event, callback) {
         createParticipant().then(() => {
           createWorker().then(() => {
             createMessage().then(() => {
-              // createWebhook().then(() => {
               callback(null)
-              // })
             })
           })
         })
