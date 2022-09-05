@@ -9,10 +9,14 @@
 	},
 	"ACdb6fe73a118680e3b12050d779266cca": {
 		"serviceSid": "ZS6ca58ca768cf6ae68e688e993e12b56d",
-		"latestBuild": "ZB219ecabd59e354afde0ac4e3c2ed4dae"
+		"latestBuild": "ZBc58b888ae3c84e35d041e3bb71936d6a"
 	},
 	"ACd7267211e062aaa7a8125f7517e87a0e": {
 		"serviceSid": "ZS50127178232b52fafcd42b37599d0a78",
 		"latestBuild": "ZB0ca9473d851e49080156b16d9c5a84fe"
+	},
+	"AC509f44b9f1d4c581e9bd91745aadc624": {
+		"serviceSid": "ZS5bead947a9c169b506b4b6ed489dd02e",
+		"latestBuild": "ZB9731e6a8f5595a1af3b60b3c1e5701a7"
 	}
 }
