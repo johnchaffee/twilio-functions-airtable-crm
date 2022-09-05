@@ -30,12 +30,10 @@ exports.handler = function (context, event, callback) {
 
   const id = event.id
   let notes = ""
+  let activities = ""
   let appointments = ""
   const fields = {}
-  console.log("TOP id:", id)
-  console.log("TOP notes:", notes)
-  console.log("TOP appointments:", appointments)
-  console.log("TOP fields:", fields)
+  console.log("id:", id)
 
   // Fetch record first
   base(event.table).find(event.id, function (err, record) {
@@ -46,6 +44,8 @@ exports.handler = function (context, event, callback) {
     console.log("Retrieved", record.id)
     notes = record.fields.notes
     console.log("RETRIEVED > NOTES:", notes)
+    activities = record.fields.activities
+    console.log("RETRIEVED > ACTIVITIES:", activities)
     appointments = record.fields.appointments
     console.log("RETRIEVED > APPOINTMENTS:", appointments)
     console.log("EVENT.FIELD:", event.field)
@@ -56,8 +56,14 @@ exports.handler = function (context, event, callback) {
       } else {
         fields.notes = `${event.value}`
       }
-    } else {
-      // If event.field != notes, it must equal appointments
+    } else if (event.field == "activities") {
+      if (activities) {
+        // append to existing appointments
+        fields.activities = `${activities}\n${event.value}`
+      } else {
+        fields.activities = `${event.value}`
+      }
+    }  else if (event.field == "appointments") {
       if (appointments) {
         // append to existing appointments
         fields.appointments = `${appointments}\n${event.value}`
