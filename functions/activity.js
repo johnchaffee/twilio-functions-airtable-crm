@@ -12,7 +12,36 @@
 
   */
 
+require("dotenv").config()
+const accountSid = process.env.ACCOUNT_SID
+const authToken = process.env.AUTH_TOKEN
+const surveyPhoneNumber = process.env.SURVEY_PHONE_NUMBER
+const surveyFlowSid = process.env.SURVEY_FLOW_SID
 const airtable = require("airtable")
+const axios = require("axios").default
+
+// SEND SURVEY FUNCTION
+const sendSurvey = async (from, to) => {
+  console.log("\x1b[32m SEND SURVEY \x1b[0m")
+  const url = `https://studio.twilio.com/v1/Flows/${surveyFlowSid}/Executions`
+  const params = new URLSearchParams()
+  params.append("From", from)
+  params.append("To", to)
+  console.log("\x1b[32m params ==>", params, "\x1b[0m")
+  const config = {
+    headers: {
+      Authorization:
+        "Basic " + Buffer.from(`${accountSid}:${authToken}`).toString("base64"),
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  }
+  try {
+    const response = await axios.post(url, params, config)
+    console.log("\x1b[32m data ==>", data, "\x1b[0m")
+  } catch (err) {
+    console.log("ERROR GETTING STUDIO FLOW\n" + err)
+  }
+}
 
 exports.handler = function (context, event, callback) {
   // Instantiate airtable object
@@ -20,24 +49,32 @@ exports.handler = function (context, event, callback) {
     context["AIRTABLE_BASE_ID"]
   )
 
-  console.log("event is ==> ", event)
+  console.log("\x1b[32m event ==>", event, "\x1b[0m")
 
-  console.log("task_attributes is ==> ", event[0].data.payload.task_attributes)
+  console.log(
+    "\x1b[32m event[0].data.payload.task_attributes ==>",
+    event[0].data.payload.task_attributes,
+    "\x1b[0m"
+  )
   const task = JSON.parse(event[0].data.payload.task_attributes)
-  console.log("JSON.parse is ==> ", task)
-  // sms channelType == sms, phone = name
-  // chat channelType == web, phone = hard code to john
+  console.log("\x1b[32m JSON.parse task ==>", task, "\x1b[0m")
+  // sms: channelType == sms, phone = from
+  // chat: channelType == web, phone = hard code to john
+  // voice: type = inbound, phone = caller
   const channelType = task.channelType
-  console.log("channelType is ==> ", channelType)
-  const name = task.name
-  console.log("name is ==> ", name)
-  const type = task.type
-  // voice type = inbound, phone = name
-  console.log("type is ==> ", task.type)
-  let phone = name
+  console.log("\x1b[32m channelType ==>", channelType, "\x1b[0m")
+  const customerAddress = task.customerAddress
+  console.log("\x1b[32m customerAddress ==>", customerAddress, "\x1b[0m")
+  const from = task.from
+  console.log("\x1b[32m from ==>", from, "\x1b[0m")
+  const caller = task.caller
+  console.log("\x1b[32m caller ==>", caller, "\x1b[0m")
+  const direction = task.direction
+  console.log("\x1b[32m direction ==>", direction, "\x1b[0m")
+  let phone
   let activity
 
-  // Set today's date on Date picker
+  // Set today's date
   let rightNow = new Date()
   let year = rightNow.getFullYear()
   let month = rightNow.getMonth() + 1
@@ -45,9 +82,13 @@ exports.handler = function (context, event, callback) {
   let hour = rightNow.getHours()
   let minute = rightNow.getMinutes()
   // Convert UTC Time to Pacific Time
-  hour = hour - 7
-  if (hour > 16) {
-    day = rightNow.getDate() -1
+  if (hour >= 7) {
+    // Subtract 7 hours from UTC time for US Pacific
+    hour = hour - 7
+  } else if (hour < 7) {
+    // If it's 0-7AM in UTC, that's 5pm-midnight the day before in US Pacific
+    hour = hour + 17
+    day = rightNow.getDate() - 1
   }
   // Format month, day, hour, minute as 2-digits
   month = ("0" + month).slice(-2)
@@ -55,27 +96,40 @@ exports.handler = function (context, event, callback) {
   hour = ("0" + hour).slice(-2)
   minute = ("0" + minute).slice(-2)
   let myDate = `${year}-${month}-${day}`
-  console.log("myDate: " + myDate)
+  console.log("\x1b[32m myDate ==>", myDate, "\x1b[0m")
   let myTime = `${myDate} ${hour}:${minute}`
-  console.log("myTime: " + myTime)
+  console.log("\x1b[32m myTime ==>", myTime, "\x1b[0m")
 
   if (channelType) {
     if (channelType === "sms") {
-      activity = `${myTime}: Text Message`
-      console.log("SMS TASK COMPLETED")
-      console.log("PHONE:", phone)
+      console.log("\x1b[32m SMS TASK COMPLETED \x1b[0m")
+      activity = `${myTime}: Completed SMS conversation`
+      phone = from
     } else if (channelType === "web") {
-      console.log("CHAT TASK COMPLETED")
-      activity = `${myTime}: Web Chat`
+      console.log("\x1b[32m CHAT TASK COMPLETED \x1b[0m")
+      activity = `${myTime}: Completed Web Chat`
       phone = "+12063996576"
-      console.log("PHONE:", phone)
     }
-  } else if (type && type === "inbound") {
-    console.log("VOICE TASK COMPLETED")
-    console.log("PHONE:", phone)
-    activity = `${myTime}: Phone Call`
+  } else if (direction && direction === "inbound") {
+    console.log("\x1b[32m VOICE TASK COMPLETED \x1b[0m")
+    activity = `${myTime}: Completed Phone Call`
+    phone = caller
   }
-  console.log("encodeURIComponent PHONE:", encodeURIComponent(phone))
+
+  // Call voice completed - call sendSurvey() method to trigger Studio flow
+  sendSurvey(surveyPhoneNumber, phone)
+    .then(function () {
+      console.log("CALLED SEND SURVEY")
+    })
+    .catch(function (err) {
+      console.log(err)
+    })
+  console.log("\x1b[32m phone ==>", phone, "\x1b[0m")
+  console.log(
+    "\x1b[32m encodeURIComponent(phone) ==>",
+    encodeURIComponent(phone),
+    "\x1b[0m"
+  )
 
   base("contacts")
     .select({
@@ -88,19 +142,19 @@ exports.handler = function (context, event, callback) {
         callback("error retrieving record", null)
       }
       // Take only the first record returned
-      console.log("RECORDS:", records)
-      console.log("RECORDS.LENGTH:", records.length)
+      console.log("\x1b[32m records ==>", records, "\x1b[0m")
+      console.log("\x1b[32m records.length ==>", records.length, "\x1b[0m")
       if (records.length > 0) {
-        console.log("RECORDS[0].id", records[0].id)
+        console.log("\x1b[32m records[0].id ==>", records[0].id, "\x1b[0m")
         // let r = records[0].fields;
         // r.id = records[0].id; // ADD Airtable ID
 
         const id = records[0].id
         let activities = records[0].fields.activities
         const fields = {}
-        console.log("TOP id:", id)
-        console.log("TOP activities:", activities)
-        console.log("TOP fields:", fields)
+        console.log("\x1b[32m id ==>", id, "\x1b[0m")
+        console.log("\x1b[32m activities ==>", activities, "\x1b[0m")
+        console.log("\x1b[32m fields ==>", fields, "\x1b[0m")
         if (activities) {
           // append to existing activities
           fields.activities = `${activities}\n${activity}`
@@ -124,13 +178,13 @@ exports.handler = function (context, event, callback) {
             records.forEach(function (record) {
               // console.log(record.getId())
               // console.log(record.get("phone"))
-              console.log("UPDATE record is ==> ", record)
+              console.log("\x1b[32m record ==>", record, "\x1b[0m")
               callback(null, { record })
             })
           }
         )
       } else {
-        console.log("RECORDS !> 0")
+        console.log("\x1b[32m RECORDS !> 0 \x1b[0m")
         callback(null, "")
       }
     })
