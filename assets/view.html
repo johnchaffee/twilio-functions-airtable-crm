@@ -194,6 +194,7 @@
         }
 
         let contact
+        let contactName
         let e164Phone
 
         // GET RECORD BY FIELD
@@ -242,6 +243,10 @@
             let name =
               contact.fields.name && contact.fields.name.length > 1
                 ? `<b>${contact.fields.name}</b><br>`
+                : ""
+            contactName =
+              contact.fields.name && contact.fields.name.length > 1
+                ? contact.fields.name
                 : ""
             let phone =
               contact.fields.phone && contact.fields.phone.length > 0
@@ -351,12 +356,10 @@
         }
 
         // CREATE CONVERSATION
-        const createConversation = async (mobileNumber, body) => {
+        const createConversation = async (mobileNumber, mobileName, body) => {
           console.log("ENTER AXIOS CREATE CONVERSATION FUNCTION")
           const options = {
-            url: `./create-conversation?mobileNumber=${encodeURIComponent(
-              mobileNumber
-            )}&body=${encodeURIComponent(body)}`,
+            url: `./create-conversation?mobileNumber=${encodeURIComponent(mobileNumber)}&mobileName=${encodeURIComponent(mobileName)}&body=${encodeURIComponent(body)}`,
             method: "POST",
           }
           console.log("options:", options)
@@ -398,7 +401,7 @@
           let updateValue = `${$("#date").val()} ${$("#time").val()}: ${$(
             "#serviceType"
           ).val()}`
-          let messageBody = `Your Rocky Mountain Crisis Partners ${$(
+          let messageBody = `Your Chafco ${$(
             "#serviceType"
           ).val()} appointment has been scheduled for ${$(
             "#date"
@@ -424,7 +427,7 @@
           //     console.log("AXIOS SEND MESSAGE ERROR:", err)
           //   })
 
-          createConversation(e164Phone, messageBody)
+          createConversation(e164Phone, contactName, messageBody)
             .then(function () {
               console.log("CALL AXIOS CREATE CONVERSATION FUNCTION")
             })
@@ -490,7 +493,7 @@
               console.log(err)
             })
 
-          createConversation(e164Phone, messageBody)
+          createConversation(e164Phone, contactName, messageBody)
             .then(function () {
               console.log("CALL AXIOS CREATE CONVERSATION FUNCTION")
             })

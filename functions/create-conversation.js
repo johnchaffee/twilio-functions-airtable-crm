@@ -15,6 +15,9 @@ exports.handler = function (context, event, callback) {
   const mobileNumber = event.mobileNumber
   console.log("\x1b[32m mobileNumber ==>", mobileNumber, "\x1b[0m")
 
+  const mobileName = event.mobileName
+  console.log("\x1b[32m mobileName ==>", mobileName, "\x1b[0m")
+
   const body = event.body
   console.log("\x1b[32m body ==>", body, "\x1b[0m")
 
@@ -42,7 +45,7 @@ exports.handler = function (context, event, callback) {
 
   async function createConversation() {
     await client.conversations.v1.conversations
-      .create({ friendlyName: "Follow up conversation" })
+      .create({ friendlyName: mobileName })
       .then((conversation) => {
         conversationSid = conversation.sid
         console.log("\x1b[32m conversationSid ==>", conversationSid, "\x1b[0m")
@@ -56,6 +59,18 @@ exports.handler = function (context, event, callback) {
       .participants.create({
         "messagingBinding.address": mobileNumber,
         "messagingBinding.proxyAddress": twilioPhoneNumber,
+      })
+      .then((participant) =>
+        console.log("\x1b[32m participant.sid ==>", participant.sid, "\x1b[0m")
+      )
+      .catch((error) => console.log(error))
+  }
+
+  async function createWorker() {
+    await client.conversations.v1
+      .conversations(conversationSid)
+      .participants.create({
+        identity: author,
       })
       .then((participant) =>
         console.log("\x1b[32m participant.sid ==>", participant.sid, "\x1b[0m")
@@ -96,10 +111,12 @@ exports.handler = function (context, event, callback) {
     if (activeConversation === false) {
       createConversation().then(() => {
         createParticipant().then(() => {
-          createMessage().then(() => {
-            // createWebhook().then(() => {
-            callback(null)
-            // })
+          createWorker().then(() => {
+            createMessage().then(() => {
+              // createWebhook().then(() => {
+              callback(null)
+              // })
+            })
           })
         })
       })
